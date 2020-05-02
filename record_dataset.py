@@ -21,12 +21,14 @@ print(' - ESC: exit')
 print(' - A  : capture gunting')
 print(' - S  : capture batu')
 print(' - D  : capture kertas')
+print(' - F  : capture none (background)')
 
 gunting_cap = 'capture/gunting/'
 batu_cap = 'capture/batu/'
 kertas_cap = 'capture/kertas/'
+none_cap = 'capture/none/'
 
-for directory in [gunting_cap, batu_cap, kertas_cap]:
+for directory in [gunting_cap, batu_cap, kertas_cap, none_cap]:
     if not os.path.exists(directory):
         os.makedirs(directory)
 
@@ -49,7 +51,8 @@ while True:
                         1,  # Thickness
                         cv2.LINE_AA)  # Line Type (optional)
     frame = cv2.putText(frame,
-                        'A -> Gunting  ~  S -> Batu  ~  D -> Kertas',  # Text
+#                         'A -> Gunting  ~  S -> Batu  ~  D -> Kertas',  # Text
+                        'A: Gunting - S: Batu - D: Kertas - F: None',  # Text
                         (50, 470),  # Origin (bottom-left corner of the text)
                         cv2.FONT_HERSHEY_SIMPLEX,  # Font
                         0.7,  # Font Scale
@@ -74,5 +77,9 @@ while True:
         file_name = 'kertas_%s.bmp' % (str(datetime.now()))
         cv2.imwrite(kertas_cap + file_name, crop)
         print('Successfully Save Kertas Image: ' + file_name)
+    elif key == ord('f'):
+        file_name = 'none_%s.bmp' % (str(datetime.now()))
+        cv2.imwrite(none_cap + file_name, crop)
+        print('Successfully Save None Image: ' + file_name)
     else:
         continue
