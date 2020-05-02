@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 import os
-from datetime import datetime
+import time
 
 cap = cv2.VideoCapture(0)
 if not cap.isOpened():
@@ -23,10 +23,10 @@ print(' - S  : capture batu')
 print(' - D  : capture kertas')
 print(' - F  : capture none (background)')
 
-gunting_cap = 'capture/gunting/'
-batu_cap = 'capture/batu/'
-kertas_cap = 'capture/kertas/'
-none_cap = 'capture/none/'
+gunting_cap = 'capture\\gunting\\'
+batu_cap = 'capture\\batu\\'
+kertas_cap = 'capture\\kertas\\'
+none_cap = 'capture\\none\\'
 
 for directory in [gunting_cap, batu_cap, kertas_cap, none_cap]:
     if not os.path.exists(directory):
@@ -53,7 +53,7 @@ while True:
     frame = cv2.putText(frame,
 #                         'A -> Gunting  ~  S -> Batu  ~  D -> Kertas',  # Text
                         'A: Gunting - S: Batu - D: Kertas - F: None',  # Text
-                        (50, 470),  # Origin (bottom-left corner of the text)
+                        (65, 470),  # Origin (bottom-left corner of the text)
                         cv2.FONT_HERSHEY_SIMPLEX,  # Font
                         0.7,  # Font Scale
                         (0, 255, 0),  # Color in BGR
@@ -66,20 +66,28 @@ while True:
     if key == 27:
         break
     elif key == ord('a'):
-        file_name = 'gunting_%s.bmp' % (str(datetime.now()))
-        cv2.imwrite(gunting_cap + file_name, crop)
-        print('Successfully Save Gunting Image: ' + file_name)
+        file_name = 'gunting_%s.bmp' % (str(time.time()))
+        if cv2.imwrite(gunting_cap + file_name, crop):
+            print('\nSuccessfully Save Gunting Image: ' + file_name)
+        else:
+            print('\nFailed to Save Gunting Image!')
     elif key == ord('s'):
-        file_name = 'batu_%s.bmp' % (str(datetime.now()))
-        cv2.imwrite(batu_cap + file_name, crop)
-        print('Successfully Save Batu Image: ' + file_name)
+        file_name = 'batu_%s.bmp' % (str(time.time()))
+        if cv2.imwrite(batu_cap + file_name, crop):
+            print('\nSuccessfully Save Batu Image: ' + file_name)
+        else:
+            print('\nFailed to Save Batu Image!')
     elif key == ord('d'):
-        file_name = 'kertas_%s.bmp' % (str(datetime.now()))
-        cv2.imwrite(kertas_cap + file_name, crop)
-        print('Successfully Save Kertas Image: ' + file_name)
+        file_name = 'kertas_%s.bmp' % (str(time.time()))
+        if cv2.imwrite(kertas_cap + file_name, crop):
+            print('\nSuccessfully Save Kertas Image: ' + file_name)
+        else:
+            print('\nFailed to Save Kertas Image!')
     elif key == ord('f'):
-        file_name = 'none_%s.bmp' % (str(datetime.now()))
-        cv2.imwrite(none_cap + file_name, crop)
-        print('Successfully Save None Image: ' + file_name)
+        file_name = 'none_%s.bmp' % (str(time.time()))
+        if cv2.imwrite(none_cap + file_name, crop):
+            print('\nSuccessfully Save None (Background) Image: ' + file_name)
+        else:
+            print('\nFailed to Save None (Background) Image!')
     else:
         continue
