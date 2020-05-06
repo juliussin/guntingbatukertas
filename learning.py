@@ -1,5 +1,6 @@
 import os
 import zipfile
+# os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 import tensorflow as tf
 import keras_preprocessing
 from keras_preprocessing import image
@@ -28,28 +29,28 @@ def press_any_key():
 
 do_extract_training = ask_y_or_n('Extract Training Data?')
 if do_extract_training:
-    local_zip = '/rps.zip'  # Training Data Location
+    local_zip = 'rps.zip'  # Training Data Location
     zip_ref = zipfile.ZipFile(local_zip, 'r')
-    zip_ref.extractall('/tmp/')
+    zip_ref.extractall('temp/')
     zip_ref.close()
 
 do_extract_testing = ask_y_or_n('Extract Testing Data?')
 if do_extract_testing:
-    local_zip = '/rps-test-set.zip'  # Testing Data Location
+    local_zip = 'rps-test-set.zip'  # Testing Data Location
     zip_ref = zipfile.ZipFile(local_zip, 'r')
-    zip_ref.extractall('/tmp/')
+    zip_ref.extractall('temp/')
     zip_ref.close()
 
-gunting_dir = os.path.join('/tmp/rps/scissors')
-batu_dir = os.path.join('/tmp/rps/rock')
-kertas_dir = os.path.join('/tmp/rps/paper')
+gunting_dir = os.path.join('temp/rps/scissors')
+batu_dir = os.path.join('temp/rps/rock')
+kertas_dir = os.path.join('temp/rps/paper')
 
 if (not os.path.exists(gunting_dir)) or (not os.path.exists(batu_dir)) or (not os.path.exists(kertas_dir)):
     raise OSError('Training Data gunting-batu-kertas not found!')
     exit()
-if not os.path.exists(os.path.join('/tmp', '/rps-test-set')):
-    raise OSError('Testing Data gunting-batu-kertas not found!')
-    exit()
+# if not os.path.exists(os.path.join('/tmp', '/rps-test-set')):
+#     raise OSError('Testing Data gunting-batu-kertas not found!')
+#     exit()
 
 print('Training gunting images: {0}'.format(len(os.listdir(gunting_dir))))
 print('Training batu    images: {0}'.format(len(os.listdir(batu_dir))))
@@ -81,7 +82,7 @@ if do_preview_training:
         plt.axis('Off')
         plt.show()
 
-training_dir = os.path.join('/tmp', '/rps')
+training_dir = os.path.join('temp', 'rps')
 training_datagen = ImageDataGenerator(rescale=1.0/255.0,
                                       rotation_range=25,
                                       width_shift_range=0.2,
@@ -91,7 +92,7 @@ training_datagen = ImageDataGenerator(rescale=1.0/255.0,
                                       horizontal_flip=True,
                                       fill_mode='nearest')
 
-validation_dir = os.path.join('/tmp', '/rps-test-set')
+validation_dir = os.path.join('temp', 'rps-test-set')
 validation_datagen = ImageDataGenerator(rescale=1.0/255.0)
 
 training_generator = training_datagen.flow_from_directory(training_dir,
@@ -104,7 +105,7 @@ validation_generator = validation_datagen.flow_from_directory(validation_dir,
                                                               batch_size=32)
 
 
-mode = tf.keras.models.Sequential([
+model = tf.keras.models.Sequential([
     tf.keras.layers.Conv2D(64, (3, 3), activation='relu', input_shape=(150, 150, 3)),
     tf.keras.layers.MaxPooling2D(2, 2),
     tf.keras.layers.Conv2D(64, (3, 3), activation='relu'),
@@ -113,6 +114,10 @@ mode = tf.keras.models.Sequential([
     tf.keras.layers.MaxPooling2D(2, 2),
     tf.keras.layers.Conv2D(128, (3, 3), activation='relu'),
     tf.keras.layers.MaxPooling2D(2, 2),
+    tf.keras.layers.Flatten(),
+    tf.keras.layers.Dropout(0.5),
+    tf.keras.layers.Dense(512, activation='relu'),
+    tf.keras.layers.Dense(3, activation='softmax')
 ])
 
 model.summary()

@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 import os
-os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+# os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 import tensorflow as tf
 
 h5name = input('\n\n\nInput H5 File Name: ')
