@@ -63,14 +63,14 @@ print('Total Kertas  Images: ', len(os.listdir(kertas_cap)))
 # If there is no images
 
 # List of Directories
-training_dir = 'dataset/training/'
-testing_dir = 'dataset/testing/'
-training_gunting_dir = os.path.join(training_dir, 'gunting/')
-testing_gunting_dir = os.path.join(testing_dir, 'gunting/')
-training_batu_dir = os.path.join(training_dir, 'batu/')
-testing_batu_dir = os.path.join(testing_dir, 'batu/')
-training_kertas_dir = os.path.join(training_dir, 'kertas/')
-testing_kertas_dir = os.path.join(testing_dir, 'kertas/')
+training_dir = os.path.join('dataset', 'training')
+testing_dir = os.path.join('dataset', 'testing')
+training_gunting_dir = os.path.join(training_dir, 'gunting')
+testing_gunting_dir = os.path.join(testing_dir, 'gunting')
+training_batu_dir = os.path.join(training_dir, 'batu')
+testing_batu_dir = os.path.join(testing_dir, 'batu')
+training_kertas_dir = os.path.join(training_dir, 'kertas')
+testing_kertas_dir = os.path.join(testing_dir, 'kertas')
 
 # Create or Overwrite Existing Directories
 do_overwrite = ask_y_or_n('Overwrite Existing Training & Testing Directories?')
@@ -110,13 +110,13 @@ training_datagen = ImageDataGenerator(
     horizontal_flip=True
 )
 training_generator = training_datagen.flow_from_directory(training_dir,
-                                                          batch_size=10,
+                                                          batch_size=2,
                                                           class_mode='categorical',
                                                           target_size=(150, 150))
 validation_datagen = ImageDataGenerator(rescale=1.0/255.0)
 validation_generator = validation_datagen.flow_from_directory(testing_dir,
-                                                              batch_size=10,
-                                                              class_mode='category',
+                                                              batch_size=2,
+                                                              class_mode='categorical',
                                                               target_size=(150, 150))
 
 # Define Keras Model to Classify Gunting-Batu-Kertas
@@ -125,22 +125,22 @@ kernel_size = (3, 3)
 maxpooling_size = (2, 2)
 model = tf.keras.models.Sequential([
     # First Convolution
-    tf.keras.layers.Conv2D(64, kernel_size, activation='relu', input_shape=input_shape),
+    tf.keras.layers.Conv2D(16, kernel_size, activation='relu', input_shape=input_shape),
     tf.keras.layers.MaxPooling2D(maxpooling_size),
     # Second Convolution
-    tf.keras.layers.Conv2D(64, kernel_size, activation='relu'),
-    tf.keras.layers.MaxPooling2D(maxpooling_size),
+    # tf.keras.layers.Conv2D(64, kernel_size, activation='relu'),
+    # tf.keras.layers.MaxPooling2D(maxpooling_size),
     # Third Convolution
-    tf.keras.layers.Conv2D(128, kernel_size, activation='relu'),
-    tf.keras.layers.MaxPooling2D(maxpooling_size),
+    # tf.keras.layers.Conv2D(128, kernel_size, activation='relu'),
+    # tf.keras.layers.MaxPooling2D(maxpooling_size),
     # Fourth Convolution
-    tf.keras.layers.Conv2D(128, kernel_size, activation='relu'),
+    tf.keras.layers.Conv2D(32, kernel_size, activation='relu'),
     tf.keras.layers.MaxPooling2D(maxpooling_size),
     # Flatten the Results to Feed into DNN
     tf.keras.layers.Flatten(),
     tf.keras.layers.Dropout(0.5),
     # Hidden Layers
-    tf.keras.layers.Dense(512, activation='relu'),
+    # tf.keras.layers.Dense(512, activation='relu'),
     tf.keras.layers.Dense(128, activation='relu'),
     # Output Layers for Categorical Crossentropy
     tf.keras.layers.Dense(3, activation='softmax')
@@ -150,7 +150,7 @@ model.compile(optimizer='rmsprop', loss='categorical_crossentropy', metrics=['ac
 
 # Training Process
 history = model.fit(training_generator,
-                    epochs=100,
+                    epochs=10,
                     steps_per_epoch=20,
                     validation_data=validation_generator,
                     validation_steps=5,
